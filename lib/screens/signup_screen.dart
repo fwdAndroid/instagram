@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagram/resources/auth_merhods.dart';
 import 'package:instagram/screens/login_screen.dart';
 import 'package:instagram/utils/colors.dart';
+import 'package:instagram/utils/utils.dart';
 import 'package:instagram/widgets/text_form_field.dart';
 
 class SignUp extends StatefulWidget {
@@ -17,6 +21,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
+  Uint8List ? _image;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -54,7 +59,10 @@ class _SignUpState extends State<SignUp> {
               ),
               Stack(
                 children: [
-                  CircleAvatar(
+               _image != null ? CircleAvatar(
+                    radius: 59,
+                    backgroundImage:MemoryImage(_image!)
+                  ):   CircleAvatar(
                     radius: 59,
                     backgroundImage: NetworkImage(
                         'https://static.remove.bg/remove-bg-web/a6eefcd21dff1bbc2448264c32f7b48d7380cb17/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png'),
@@ -63,7 +71,7 @@ class _SignUpState extends State<SignUp> {
                       bottom: -10,
                       left: 70,
                       child: IconButton(
-                          onPressed: () {},
+                          onPressed: () => selectImage(),
                           icon: Icon(
                             Icons.add_a_photo,
                             color: Colors.white,
@@ -169,5 +177,13 @@ class _SignUpState extends State<SignUp> {
       ),
           )),
     );
+  }
+  
+  /// Select Image From Gallery
+  selectImage() async{
+    Uint8List ui = await pickImage(ImageSource.gallery);
+   setState(() {
+     _image = ui;
+   });
   }
 }
