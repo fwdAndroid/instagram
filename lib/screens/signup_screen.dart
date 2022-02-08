@@ -21,7 +21,10 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-  Uint8List ? _image;
+  Uint8List? _image;
+
+  //Looding Variable
+  bool _isLoading = false;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -38,35 +41,32 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Colors.black,
       body: SafeArea(
           child: SingleChildScrollView(
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.symmetric(horizontal: 32),
-        width: double.infinity,
-        child: Column(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(horizontal: 32),
+          width: double.infinity,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(
-                child: Container(),
-                flex: 2,
-              ),
+            
               SvgPicture.asset(
                 'assets/ic_instagram.svg',
                 color: primaryColor,
-                height: 65,
+                height: 43,
               ),
               SizedBox(
-                height: 63,
+                height: 40,
               ),
               Stack(
                 children: [
-               _image != null ? CircleAvatar(
-                    radius: 59,
-                    backgroundImage:MemoryImage(_image!)
-                  ):   CircleAvatar(
-                    radius: 59,
-                    backgroundImage: NetworkImage(
-                        'https://static.remove.bg/remove-bg-web/a6eefcd21dff1bbc2448264c32f7b48d7380cb17/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png'),
-                  ),
+                  _image != null
+                      ? CircleAvatar(
+                          radius: 59, backgroundImage: MemoryImage(_image!))
+                      : CircleAvatar(
+                          radius: 59,
+                          backgroundImage: NetworkImage(
+                              'https://static.remove.bg/remove-bg-web/a6eefcd21dff1bbc2448264c32f7b48d7380cb17/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png'),
+                        ),
                   Positioned(
                       bottom: -10,
                       left: 70,
@@ -115,16 +115,8 @@ class _SignUpState extends State<SignUp> {
                 height: 23,
               ),
               InkWell(
-                onTap: () async {
-                  String rse = await AuthMethods().signUpUser(
-                      email: emailController.text,
-                      pass: passController.text,
-                      bio: bioController.text,
-                      username: userNameController.text);
-                      print(rse);
-                },
-                
-                child: Container(
+                onTap:  signUpUsers,
+                child:_isLoading ? Center(child: CircularProgressIndicator(),) : Container(
                   height: 60,
                   child: Text('Register'),
                   width: double.infinity,
@@ -139,10 +131,7 @@ class _SignUpState extends State<SignUp> {
               SizedBox(
                 height: 13,
               ),
-              Flexible(
-                child: Container(),
-                flex: 2,
-              ),
+             
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -157,8 +146,10 @@ class _SignUpState extends State<SignUp> {
                   ),
                   InkWell(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (builder) => LoginScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (builder) => LoginScreen()));
                     },
                     child: Container(
                       child: Text(
@@ -173,17 +164,41 @@ class _SignUpState extends State<SignUp> {
                 ],
               )
             ],
+          ),
         ),
-      ),
-          )),
+      )),
     );
   }
-  
+
+  ////Functions///////
+
   /// Select Image From Gallery
-  selectImage() async{
+  selectImage() async {
     Uint8List ui = await pickImage(ImageSource.gallery);
-   setState(() {
-     _image = ui;
-   });
+    setState(() {
+      _image = ui;
+    });
+  }
+
+///Register Users
+  signUpUsers() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String rse = await AuthMethods().signUpUser(
+        email: emailController.text,
+        pass: passController.text,
+        bio: bioController.text,
+        username: userNameController.text,
+        file: _image!);
+
+    print(rse);
+    setState(() {
+      _isLoading = false;
+    });
+    if(rse != 'sucess'){
+       showSnakBar(rse, context);
+    }
+     
   }
 }
