@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/resources/auth_merhods.dart';
+import 'package:instagram/responsive/mobile_screen_layout.dart';
+import 'package:instagram/responsive/responsive_layout_screen.dart';
+import 'package:instagram/responsive/web_screen_layout.dart';
 import 'package:instagram/screens/home_screen.dart';
 import 'package:instagram/screens/signup_screen.dart';
 import 'package:instagram/utils/colors.dart';
@@ -130,7 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = false;
     });
     if(rse == 'sucess'){
-       Navigator.pushReplacement(context, MaterialPageRoute(builder: (builder) => HomeScreen()));
+       MaterialPageRoute(
+          builder: (builder) => ResponsiveLayout(
+              mobileScreenLayout: MobileScreenLayout(),
+              webScreenLayout: WebScreenLayout()));
     }
     else{
       showSnakBar(rse, context);

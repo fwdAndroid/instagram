@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram/resources/auth_merhods.dart';
+import 'package:instagram/responsive/mobile_screen_layout.dart';
+import 'package:instagram/responsive/responsive_layout_screen.dart';
+import 'package:instagram/responsive/web_screen_layout.dart';
 import 'package:instagram/screens/login_screen.dart';
 import 'package:instagram/utils/colors.dart';
 import 'package:instagram/utils/utils.dart';
@@ -48,7 +51,6 @@ class _SignUpState extends State<SignUp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-            
               SvgPicture.asset(
                 'assets/ic_instagram.svg',
                 color: primaryColor,
@@ -115,23 +117,27 @@ class _SignUpState extends State<SignUp> {
                 height: 23,
               ),
               InkWell(
-                onTap:  signUpUsers,
-                child:_isLoading ? Center(child: CircularProgressIndicator(),) : Container(
-                  height: 60,
-                  child: Text('Register'),
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(horizontal: 22),
-                  decoration: ShapeDecoration(
-                      color: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(4)))),
-                ),
+                onTap: signUpUsers,
+                child: _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Container(
+                        height: 60,
+                        child: Text('Register'),
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(horizontal: 22),
+                        decoration: ShapeDecoration(
+                            color: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4)))),
+                      ),
               ),
               SizedBox(
                 height: 13,
               ),
-             
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -180,7 +186,7 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
-///Register Users
+  ///Register Users
   signUpUsers() async {
     setState(() {
       _isLoading = true;
@@ -196,9 +202,13 @@ class _SignUpState extends State<SignUp> {
     setState(() {
       _isLoading = false;
     });
-    if(rse != 'sucess'){
-       showSnakBar(rse, context);
+    if (rse != 'sucess') {
+      showSnakBar(rse, context);
+    } else {
+      MaterialPageRoute(
+          builder: (builder) => ResponsiveLayout(
+              mobileScreenLayout: MobileScreenLayout(),
+              webScreenLayout: WebScreenLayout()));
     }
-     
   }
 }
