@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram/resources/auth_merhods.dart';
+import 'package:instagram/screens/home_screen.dart';
 import 'package:instagram/screens/signup_screen.dart';
 import 'package:instagram/utils/colors.dart';
+import 'package:instagram/utils/utils.dart';
 import 'package:instagram/widgets/text_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -65,8 +69,10 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 23,
             ),
             InkWell(
-              onTap: (){},
-              child: Container(
+              onTap: loginUser,
+              child: _isLoading ? Center(
+                child: CircularProgressIndicator(),
+              ) : Container(
                 height: 60,
                 child: Text('Login'),
                 width: double.infinity,
@@ -109,4 +115,27 @@ class _LoginScreenState extends State<LoginScreen> {
       )),
     );
   }
+
+  void loginUser() async{
+    setState(() {
+      _isLoading = true;
+    });
+    String rse = await AuthMethods().loginUpUser(
+        email: emailController.text,
+        pass: passController.text,
+      );
+
+    print(rse);
+    setState(() {
+      _isLoading = false;
+    });
+    if(rse == 'sucess'){
+       Navigator.pushReplacement(context, MaterialPageRoute(builder: (builder) => HomeScreen()));
+    }
+    else{
+      showSnakBar(rse, context);
+    }
+     
+  }
+  
 }
