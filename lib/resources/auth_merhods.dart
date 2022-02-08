@@ -9,6 +9,14 @@ class AuthMethods{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
+//Get Users Details
+Future<UserModel> getUserDetails() async {
+   User currentUser = _auth.currentUser!;
+   DocumentSnapshot documentSnapshot =await firebaseFirestore.collection('users').doc(currentUser.uid).get();
+   return UserModel.fromSnap(documentSnapshot);
+}
+
+
 
   //Register User with Add User
  Future <String> signUpUser({
