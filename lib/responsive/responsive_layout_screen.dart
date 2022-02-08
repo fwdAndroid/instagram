@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:instagram/provider/user_provider.dart';
 import 'package:instagram/utils/dimensions.dart';
+import 'package:provider/provider.dart';
 
 class ResponsiveLayout extends StatefulWidget {
   final Widget mobileScreenLayout;
@@ -12,6 +14,12 @@ class ResponsiveLayout extends StatefulWidget {
 
 class _ResponsiveLayoutState extends State<ResponsiveLayout> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    addData();
+  }
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context,constraints){
@@ -21,5 +29,10 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
         return widget.mobileScreenLayout;
       },
     );
+  }
+
+  void addData() async{
+    UserProvider userProvider = Provider.of(context,listen: false);
+    await userProvider.refreshUser();
   }
 }

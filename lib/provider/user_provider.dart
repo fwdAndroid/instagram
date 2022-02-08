@@ -5,10 +5,10 @@ import 'package:instagram/models/user_model.dart';
 import 'package:instagram/resources/auth_merhods.dart';
 
 class UserProvider with ChangeNotifier{
-   UserModel? _users;
+   late UserModel _users;
      AuthMethods _auth = AuthMethods();
     //Getting User Data
-    UserModel get getUser => _users!;
+    UserModel get getUser => _users;
 
     //Refresh User
     Future<void> refreshUser() async{
