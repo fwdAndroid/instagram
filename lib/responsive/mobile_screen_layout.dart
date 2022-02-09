@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram/screens/add_post_screen.dart';
 import 'package:instagram/utils/colors.dart';
+import 'package:instagram/utils/global_variables.dart';
 
 class MobileScreenLayout extends StatefulWidget {
    late PageController pageController;
@@ -70,14 +72,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
             backgroundColor: primaryColor),
       ]),
       body: PageView(
-        children: [
-            Text('Feed'),
-           Text('Search'),
-           Text('Add Post'),
-           Text('Noti'),
-           Text("Profile")
-        
-        ],
+        children:homeScreenSize,
         controller: widget.pageController,
         onPageChanged: onPageChanged,
       )
