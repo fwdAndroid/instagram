@@ -1,25 +1,97 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram/models/user_model.dart';
-import 'package:instagram/provider/user_provider.dart';
-import 'package:instagram/screens/login_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:instagram/utils/colors.dart';
 
 class MobileScreenLayout extends StatefulWidget {
-  const MobileScreenLayout({ Key? key }) : super(key: key);
+   late PageController pageController;
+
 
   @override
   _MobileScreenLayoutState createState() => _MobileScreenLayoutState();
 }
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
- 
+  int _pages = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+   widget.pageController = PageController();
+  }
+ @override
+ void dispose(){
+   super.dispose();
+   widget.pageController.dispose();
+ }
+
   @override
   Widget build(BuildContext context) {
-    UserModel userModel = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
-      body: Center(child: Text(userModel.email)),
+      bottomNavigationBar:
+          CupertinoTabBar(backgroundColor: mobileBackgroundColor, 
+          onTap: navigateTapped,
+          
+          items: [
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.search,
+              color: _pages == 0 ? primaryColor : secondaryColor,
+            ),
+            label: '',
+            backgroundColor: primaryColor),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: _pages == 1 ? primaryColor : secondaryColor,
+            ),
+            label: '',
+            backgroundColor: primaryColor),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.add_circle,
+              color: _pages == 2 ? primaryColor : secondaryColor,
+            ),
+            label: '',
+            backgroundColor: primaryColor),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.favorite,
+              color: _pages == 3 ? primaryColor : secondaryColor,
+            ),
+            label: '',
+            backgroundColor: primaryColor),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person,
+              color: _pages == 4 ? primaryColor : secondaryColor,
+            ),
+            label: '',
+            backgroundColor: primaryColor),
+      ]),
+      body: PageView(
+        children: [
+            Text('Feed'),
+           Text('Search'),
+           Text('Add Post'),
+           Text('Noti'),
+           Text("Profile")
+        
+        ],
+        controller: widget.pageController,
+        onPageChanged: onPageChanged,
+      )
     );
   }
 
-  
+  void navigateTapped(int value) {
+    widget.pageController.jumpToPage(value);
+
+  }
+
+  void onPageChanged(int value) {
+    setState(() {
+      _pages = value;
+   });
+  }
 }
