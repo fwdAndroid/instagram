@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -19,6 +20,9 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
   TextEditingController descriptionController = TextEditingController();
+
+  //Linear Indicator
+  bool _isloading = false;
 
   //Functions
   ///Select Image Dialog///
@@ -67,19 +71,38 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
 //// Post Data to Firebase
   void postImageInFirebase(
+
       String uid, String username, String profImage) async {
     try {
+      setState(() {
+        _isloading = true;
+      });
       String res = await FirestoreMethods().uploadPosts(
           _file!, descriptionController.text, uid, username, profImage);
 
       if (res == "success") {
+         setState(() {
+          _isloading = false;
+        });
         showSnakBar('Posted', context);
+        clearImage();
+       
       } else {
+                setState(() {
+          _isloading = false;
+        });
         showSnakBar(res, context);
       }
     } catch (e) {
       showSnakBar(e.toString(), context);
     }
+  }
+
+  ///Clear Image
+  void clearImage(){
+    setState(() {
+      _file = null;
+    });
   }
 
   @override
@@ -104,7 +127,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
               leading:
-                  IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
+                  IconButton(onPressed:clearImage, icon: Icon(Icons.arrow_back)),
               title: Text("Post To"),
               centerTitle: false,
               actions: [
@@ -121,7 +144,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
             ),
             body: Column(
               children: [
-                Row(
+                _isloading ?LinearProgressIndicator():Padding(
+                  padding: EdgeInsets.only(top: 0),
+                ),
+                Divider(),
+                                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
