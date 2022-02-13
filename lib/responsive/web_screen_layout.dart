@@ -5,7 +5,7 @@ import 'package:instagram/utils/colors.dart';
 import 'package:instagram/utils/global_variables.dart';
 
 class WebScreenLayout extends StatefulWidget {
-   late PageController pageController;
+    PageController? pageController;
 
 
   @override
@@ -24,7 +24,7 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
  @override
  void dispose(){
    super.dispose();
-   widget.pageController.dispose();
+   widget.pageController!.dispose();
  }
 
   @override
@@ -80,7 +80,7 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
   }
 
   void navigateTapped(int value) {
-    widget.pageController.jumpToPage(value);
+    widget.pageController!.jumpToPage(value);
 
   }
 
