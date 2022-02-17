@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:instagram/models/post_model.dart';
+import 'package:instagram/models/user_model.dart';
+import 'package:instagram/provider/user_provider.dart';
 import 'package:instagram/utils/colors.dart';
+import 'package:instagram/widgets/like_animations.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final snap;
-   PostCard({ Key? key, required this.snap }) : super(key: key);
+  PostCard({Key? key, required this.snap}) : super(key: key);
 
   @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  bool isLIkeAnimating = false;
+  @override
   Widget build(BuildContext context) {
+    final UserModel userModel = Provider.of<UserProvider>(context).getUser;
     return SingleChildScrollView(
       child: Container(
         color: Colors.white,
@@ -21,9 +33,7 @@ class PostCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 19,
-                    backgroundImage:
-                     NetworkImage(
-                       snap['profileImage']),
+                    backgroundImage: NetworkImage(widget.snap['profileImage']),
                   ),
                   Expanded(
                     child: Padding(
@@ -33,7 +43,7 @@ class PostCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            snap['username'],
+                            widget.snap['username'],
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -65,24 +75,54 @@ class PostCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Image Selection
-            SizedBox(
-                height: MediaQuery.of(context).size.height * 0.85,
-                width: double.infinity,
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: Image.network(
-                    
-                     snap['postUrl'],),
-                )),
+            // Image Selection And Like Animation
+            GestureDetector(
+              onDoubleTap: (){
+                setState(() {
+                  isLIkeAnimating = true;
+                });
+              },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.85,
+                      width: double.infinity,
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Image.network(
+                          widget.snap['postUrl'],
+                        ),
+                      )),
+                  AnimatedOpacity(
+                    opacity: isLIkeAnimating ? 1 : 0,
+                    duration: Duration(milliseconds: 200),
+                    child: LikeAnimations(
+                        child: Icon(Icons.favorite, size: 100, color: Colors.white),
+                        isAnimating: isLIkeAnimating,
+                        duration: Duration(milliseconds: 400),
+                        onEmd: (){
+                          setState(() {
+                            isLIkeAnimating = false;
+                          });
+                        },),
+                  ),
+                ],
+              ),
+            ),
             //Like Comment Section
             Row(
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.favorite,
-                    color: Colors.red,
+                LikeAnimations(
+                  isAnimating: true,
+                 // widget.snap['likes'].contain(userModel!.uid),
+                  smallLike: true,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.favorite,
+                      color: Colors.red,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -119,11 +159,17 @@ class PostCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     DefaultTextStyle(
-                        style: Theme.of(context)
-                            .textTheme
-                            .subtitle2!
-                            .copyWith(fontWeight: FontWeight.w800),
-                        child: Text('${snap['likes'].length} likes',style: TextStyle(color:Colors.black,),),),
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle2!
+                          .copyWith(fontWeight: FontWeight.w800),
+                      child: Text(
+                        '${widget.snap['likes'].length} likes',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.only(top: 9),
@@ -132,33 +178,32 @@ class PostCard extends StatelessWidget {
                         style: TextStyle(color: primaryColor),
                         children: [
                           TextSpan(
-                              text: snap['username'],
+                              text: widget.snap['username'],
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                              )),
-                               TextSpan(
-                              text:' ${snap['description']}',
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                          TextSpan(
+                              text: ' ${widget.snap['description']}',
                               style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black
-                              )                            )
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black))
                         ],
                       )),
                     ),
                     InkWell(
-                      onTap: (){},
-                      child: Text('View all Comments',style: TextStyle(
-                        fontSize: 15,
-                        color: secondaryColor
-                      ),),
+                      onTap: () {},
+                      child: Text(
+                        'View all Comments',
+                        style: TextStyle(fontSize: 15, color: secondaryColor),
+                      ),
                     ),
-                       Container(
-                         padding: EdgeInsets.symmetric(vertical: 5),
-                      child: Text(DateFormat.yMMMd().format(snap['datePublished'].toDate()),style: TextStyle(
-                        fontSize: 15,
-                        color: secondaryColor
-                      ),),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 5),
+                      child: Text(
+                        DateFormat.yMMMd()
+                            .format(widget.snap['datePublished'].toDate()),
+                        style: TextStyle(fontSize: 15, color: secondaryColor),
+                      ),
                     )
                   ],
                 ))
