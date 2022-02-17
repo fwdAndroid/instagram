@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:instagram/utils/colors.dart';
 
-class PostCard extends StatefulWidget {
-  const PostCard({Key? key}) : super(key: key);
+class PostCard extends StatelessWidget {
+  final snap;
+   PostCard({ Key? key, required this.snap }) : super(key: key);
 
-  @override
-  _PostCardState createState() => _PostCardState();
-}
-
-class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -24,8 +20,9 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   CircleAvatar(
                     radius: 19,
-                    backgroundImage: NetworkImage(
-                        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"),
+                    backgroundImage:
+                     NetworkImage(
+                       snap['profileImage']),
                   ),
                   Expanded(
                     child: Padding(
@@ -35,7 +32,7 @@ class _PostCardState extends State<PostCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'username',
+                            snap['username'],
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -71,8 +68,12 @@ class _PostCardState extends State<PostCard> {
             SizedBox(
                 height: MediaQuery.of(context).size.height * 0.85,
                 width: double.infinity,
-                child: Image.network(
-                    'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg')),
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: Image.network(
+                    
+                     snap['postUrl'],),
+                )),
             //Like Comment Section
             Row(
               children: [
@@ -121,8 +122,7 @@ class _PostCardState extends State<PostCard> {
                             .textTheme
                             .subtitle2!
                             .copyWith(fontWeight: FontWeight.w800),
-                        child: Text('123 Likes',
-                            style: Theme.of(context).textTheme.bodyText2)),
+                        child: Text('${snap['likes'].length} likes',style: TextStyle(color:Colors.black,),),),
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.only(top: 9),
@@ -131,13 +131,13 @@ class _PostCardState extends State<PostCard> {
                         style: TextStyle(color: primaryColor),
                         children: [
                           TextSpan(
-                              text: 'username',
+                              text: snap['username'],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black
                               )),
                                TextSpan(
-                              text: '  Here is the description',
+                              text:   snap['description'],
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black
