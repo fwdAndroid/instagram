@@ -63,9 +63,10 @@ class FirestoreMethods {
   Future<void> postComment(String postid, String text, String uid,String name,String profilePic) async {
     try {
       if(
-        text.isEmpty      ){
+        text.isNotEmpty){
           String commentID = Uuid().v1();
           await _firebaseFirestore.collection('posts').doc(postid).collection('comments').doc(commentID).set({
+             'uid':uid,
             'profilePic' : profilePic,
             'name':name,
             'text':text,

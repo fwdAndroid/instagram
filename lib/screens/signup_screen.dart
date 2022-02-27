@@ -24,7 +24,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-  Uint8List? _image;
+  Uint8List ? _image;
 
   //Looding Variable
   bool _isLoading = false;

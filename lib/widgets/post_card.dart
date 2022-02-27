@@ -91,7 +91,7 @@ class _PostCardState extends State<PostCard> {
                 alignment: Alignment.center,
                 children: [
                   SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.6,
                       width: double.infinity,
                       child: FittedBox(
                         fit: BoxFit.cover,
