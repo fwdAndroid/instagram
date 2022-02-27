@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/models/post_model.dart';
 import 'package:instagram/models/user_model.dart';
@@ -19,6 +21,14 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLIkeAnimating = false;
+  int commentLength = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getComments();
+  }
+
   @override
   Widget build(BuildContext context) {
     final UserModel userModel = Provider.of<UserProvider>(context).getUser;
@@ -208,7 +218,7 @@ class _PostCardState extends State<PostCard> {
                     InkWell(
                       onTap: () {},
                       child: Text(
-                        'View all Comments',
+                        'View $commentLength Comments',
                         style: TextStyle(fontSize: 15, color: secondaryColor),
                       ),
                     ),
@@ -226,5 +236,17 @@ class _PostCardState extends State<PostCard> {
         ),
       ),
     );
+  }
+
+
+/// Get Coments List
+  Future<void> getComments() async{
+    try{
+         QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('posts').doc(widget.snap['postId']).collection('comments').get();
+   commentLength = querySnapshot.docs.length;
+    }catch(e){
+      print(e.toString());
+    }
+
   }
 }
