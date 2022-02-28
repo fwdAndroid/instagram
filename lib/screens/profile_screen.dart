@@ -1,22 +1,34 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/utils/colors.dart';
+import 'package:instagram/utils/utils.dart';
 
 import '../widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+ final String uid;
+  const  ProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+   var userData = {};
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
-        title: Text('usernaem'),
+        title: Text(userData['username']),
       ),
       body: ListView(
         children: [
@@ -27,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.red,
+                      backgroundImage: NetworkImage(userData['photoURL']),
                       radius: 40,
                     ),
                     Expanded(
@@ -65,12 +77,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(top: 15),
-                  child: Text('username',style: TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text(userData['username'],style: TextStyle(fontWeight: FontWeight.bold),),
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(top: 5),
-                  child: Text('description',style: TextStyle(fontWeight: FontWeight.w300),),
+                  child: Text(userData['bio'],style: TextStyle(fontWeight: FontWeight.w300),),
                 )
               ],
             ),
@@ -95,5 +107,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
            ),
         ],
     );
+  }
+
+  void getData() async{
+    try{
+    var snap =  await FirebaseFirestore.instance.collection("users").doc(widget.uid).get();
+    userData = snap.data()!;
+    setState(() {
+      
+    });
+    }catch(e){
+      showSnakBar(e.toString(), context);
+    }
   }
 }
