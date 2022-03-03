@@ -17,6 +17,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
    var userData = {}; 
    int postLength = 0;
+   int followers = 0;
+   int following = 0;
   @override
   void initState() {
     // TODO: implement initState
@@ -52,8 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             mainAxisAlignment:MainAxisAlignment.spaceEvenly,
                             children: [
                               buildStateColumn(postLength, "Posts"),
-                              buildStateColumn(120, "Followers"),
-                              buildStateColumn(102, "Following"),
+                              buildStateColumn(followers, "Followers"),
+                              buildStateColumn(following, "Following"),
                             ],
                           ),
                            Row(
@@ -115,9 +117,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var snap =  await FirebaseFirestore.instance.collection("users").doc(widget.uid).get();
     //Get Post Lenght
         var snapPost =  await FirebaseFirestore.instance.collection("posts").where('uid',isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
+
         postLength = snapPost.docs.length;
 
     userData = snap.data()!;
+    followers = snap.data()!['followers'].length;
+    following =snap.data()!['following'].length;
     setState(() {
       
     });
