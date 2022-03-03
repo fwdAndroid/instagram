@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram/resources/firestore_methods.dart';
 import 'package:instagram/utils/colors.dart';
 import 'package:instagram/utils/utils.dart';
 
@@ -76,20 +77,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           text: 'Edit Profile',
                           backgroundColor: Colors.black,
                         ): isFollowing ? FollowButon(
-                          function: (){},
+                          function: ()async{
+                            await FirestoreMethods().followUser(FirebaseAuth.instance.currentUser!.uid, userData['uid']);
+                            setState(() {
+                                                    isFollowing = false;
+                                                    followers--;
+                                                  });
+                          },
                           borderColor: Colors.grey,
                           textColor: Colors.white,
                           text: 'Unfollow',
                           backgroundColor: Colors.black,
                         ): FollowButon(
-                          function: (){},
+
+                          
+                          function: () async{
+                            await FirestoreMethods().followUser(FirebaseAuth.instance.currentUser!.uid, userData['uid']);
+                            setState(() {
+                                                    isFollowing = true;
+                                                    followers++;
+                                                  });
+                            
+                          },
                           borderColor: Colors.grey,
                           textColor: Colors.white,
                           text: 'Follow',
                           backgroundColor: Colors.blue,
+                          
                         )
+                        
+                        
                       ],
                     )
+                    
                         ],
                       ),
                       
