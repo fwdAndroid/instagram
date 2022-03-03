@@ -12,5 +12,5 @@ List<Widget> homeScreenSize = [
   SearchScreen(),
   AddPostScreen(),
   Text('Noti'),
-  ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid,)
+  ProfileScreen(uid:FirebaseAuth.instance.currentUser!.uid,)
 ];
