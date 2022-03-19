@@ -1,68 +1,106 @@
-import 'package:country_code_picker/country_code_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram/phone/otpcontrolleer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:instagram/screens/signup_screen.dart';
 
-class PhoneAuth extends StatefulWidget {
-  const PhoneAuth({ Key? key }) : super(key: key);
+class LoginWithPhone extends StatefulWidget {
+  const LoginWithPhone({Key? key}) : super(key: key);
 
   @override
-  _PhoneAuthState createState() => _PhoneAuthState();
+  _LoginWithPhoneState createState() => _LoginWithPhoneState();
 }
 
-class _PhoneAuthState extends State<PhoneAuth> {
-  String dialCodeDigit = "+00";
-  TextEditingController controller = TextEditingController();
+class _LoginWithPhoneState extends State<LoginWithPhone> {
+  TextEditingController phoneController = TextEditingController(text: "+923028997122");
+  TextEditingController otpController = TextEditingController();
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  bool otpVisibility = false;
+
+  String verificationID = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(child: Column(
-        children: [
-          SizedBox(
-            height: 100,
-          ),
-          SizedBox(
-            width:400,
-            height: 90,
-            child: CountryCodePicker(
-               onChanged: (country){
-                 setState(() {
-                   dialCodeDigit = country.dialCode!;
-
-                 });
-               },
-               initialSelection: 'IT',
-               showCountryOnly: false,
-               showOnlyCountryWhenClosed: false,
-               favorite:["+1","US","+92","PAK"]
-
-              ),
-          ),
-
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Enter Phone Number",
-                prefix: Padding(padding: EdgeInsets.all(4),
-                child: Text(dialCodeDigit),)
-              ),
-              maxLength: 12,
-              controller: controller,
-              keyboardType: TextInputType.number,
+      appBar: AppBar(
+        title: Text("Login With Phone"),
+      ),
+      body: Container(
+        margin: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: phoneController,
+              decoration: InputDecoration(labelText: "Phone number"),
+              keyboardType: TextInputType.phone,
             ),
-          ),
-           ElevatedButton(
-          
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (builder) => OptController(
-                phone: controller.text,
-                codeDigit :dialCodeDigit
-              )));
-            },
-            child: const Text('Next'),
-          ),
-        ],
-      ),),
+
+            Visibility(child: TextField(
+              controller: otpController,
+              decoration: InputDecoration(),
+              keyboardType: TextInputType.number,
+            ),visible: otpVisibility,),
+
+            SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  if(otpVisibility){
+                    verifyOTP();
+                  }
+                  else {
+                    loginWithPhone();
+                  }
+                },
+                child: Text(otpVisibility ? "Verify" : "Login")),
+          ],
+        ),
+      ),
     );
+  }
+
+  void loginWithPhone() async {
+    auth.verifyPhoneNumber(
+      phoneNumber: phoneController.text,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await auth.signInWithCredential(credential).then((value){
+          print("You are logged in successfully");
+        });
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print(e.message);
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        otpVisibility = true;
+        verificationID = verificationId;
+        setState(() {});
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+
+      },
+    );
+  }
+
+  void verifyOTP() async {
+
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationID, smsCode: otpController.text);
+
+    await auth.signInWithCredential(credential).then((value){
+      print("You are logged in successfully");
+      
+      Fluttertoast.showToast(
+          msg: "You are logged in successfully",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+      Navigator.push(context, MaterialPageRoute(builder: (builder) => SignUp()));
+    });
   }
 }
